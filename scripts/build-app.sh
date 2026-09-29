@@ -5,8 +5,10 @@
 #   VERSION=1.2.0 scripts/build-app.sh
 #   SIGN_IDENTITY="Developer ID Application: …" scripts/build-app.sh
 #
-# Without SIGN_IDENTITY the app is ad-hoc signed: fine on your own Mac,
-# but Gatekeeper will complain on others (right-click › Open the first time).
+# Without SIGN_IDENTITY it uses your "Apple Development" certificate when there is one.
+# A stable identity matters: macOS ties privacy permissions (Full Disk Access, folder
+# access) to the signature, so an ad-hoc build asks for them again after every rebuild.
+# With no certificate at all (e.g. CI) the app is ad-hoc signed.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -43,5 +45,10 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
+if [ -z "${SIGN_IDENTITY:-}" ]; then
+  SIGN_IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null \
+    | awk -F'"' '/Apple Development|Developer ID Application/ {print $2; exit}')
+fi
 codesign --force --options runtime --sign "${SIGN_IDENTITY:--}" "$APP"
+echo "Signed with: ${SIGN_IDENTITY:-ad-hoc}"
 echo "Built $APP ($VERSION, build $BUILD_NUMBER)"

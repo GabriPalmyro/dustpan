@@ -25,6 +25,8 @@ struct MainView: View {
         }
         .onDisappear { NSApp.setActivationPolicy(.accessory) }
         .task {
+            // No scanning (and no folder-permission dialogs) until onboarding is done.
+            guard Preferences.onboardingDone else { state.openOnboarding?(); return }
             if state.scanned.isEmpty { await state.scanAll() }
         }
     }

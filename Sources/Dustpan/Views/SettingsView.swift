@@ -39,6 +39,9 @@ struct SettingsView: View {
                             launchAtLogin = SMAppService.mainApp.status == .enabled
                         }
                     }
+                LabeledContent("Permissions") {
+                    Button("Review…") { state.openOnboarding?() }
+                }
                 Picker("Menu bar shows", selection: $menuBarStyle) {
                     ForEach(MenuBarStyle.allCases, id: \.self) { Text($0.title) }
                 }

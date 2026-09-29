@@ -8,9 +8,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     private var center: UNUserNotificationCenter { .current() }
 
-    func requestAuthorization() {
+    /// Handles clicks on notifications. Permission itself is asked for during onboarding.
+    func activate() {
         center.delegate = self
-        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
     func post(id: String, title: String, body: String) {

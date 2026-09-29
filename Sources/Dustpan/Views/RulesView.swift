@@ -42,25 +42,27 @@ private struct RuleRow: View {
     let runNow: () -> Void
 
     var body: some View {
-        HStack {
-            Toggle(isOn: $rule.enabled) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(rule.title)
-                    if let last = rule.lastRun {
-                        Text("Last run \(last.relative)").font(.caption).foregroundStyle(.secondary)
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(rule.title).lineLimit(1)
+                if rule.id == AutoCleanRule.installersID {
+                    HStack(spacing: 4) {
+                        Text("Older than \(rule.olderThanDays) days")
+                        Stepper("", value: $rule.olderThanDays, in: 7...365, step: 7)
+                            .labelsHidden()
+                            .controlSize(.mini)
                     }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                if let last = rule.lastRun {
+                    Text("Last run \(last.relative)").font(.caption).foregroundStyle(.secondary)
                 }
             }
-            .toggleStyle(.switch)
-            .controlSize(.small)
+            .layoutPriority(1)
 
-            Spacer()
+            Spacer(minLength: 8)
 
-            if rule.id == AutoCleanRule.installersID {
-                Stepper("older than \(rule.olderThanDays)d", value: $rule.olderThanDays, in: 7...365, step: 7)
-                    .fixedSize()
-                    .foregroundStyle(.secondary)
-            }
             Picker("", selection: $rule.schedule) {
                 ForEach(AutoCleanRule.Schedule.allCases, id: \.self) { Text($0.rawValue) }
             }
@@ -71,7 +73,13 @@ private struct RuleRow: View {
             Button(action: runNow) {
                 if isRunning { ProgressView().controlSize(.small) } else { Text("Run Now") }
             }
+            .fixedSize()
             .disabled(isRunning)
+
+            Toggle("", isOn: $rule.enabled)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .labelsHidden()
         }
     }
 }

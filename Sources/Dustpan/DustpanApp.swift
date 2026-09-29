@@ -28,6 +28,14 @@ struct DustpanApp: App {
         .defaultSize(width: 860, height: 580)
         .windowResizability(.contentMinSize)
 
+        Window("Welcome to Dustpan", id: "onboarding") {
+            OnboardingView()
+                .environment(state)
+        }
+        .windowResizability(.contentSize)
+        .windowStyle(.hiddenTitleBar)
+        .defaultPosition(.center)
+
         Settings {
             SettingsView()
                 .environment(state)
@@ -59,10 +67,15 @@ private struct MenuBarLabel: View {
                 openWindow(id: "main")
                 NSApp.activate(ignoringOtherApps: true)
             }
+            state.openOnboarding = {
+                openWindow(id: "onboarding")
+                NSApp.activate(ignoringOtherApps: true)
+            }
             state.startMonitoring()
             monitor.start()
-            if CommandLine.arguments.contains("--open") || !UserDefaults.standard.bool(forKey: "hasLaunched") {
-                UserDefaults.standard.set(true, forKey: "hasLaunched")
+            if !Preferences.onboardingDone {
+                state.openOnboarding?()
+            } else if CommandLine.arguments.contains("--open") {
                 state.openMainWindow?()
             }
         }

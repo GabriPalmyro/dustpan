@@ -56,7 +56,7 @@ Dustpan isn't notarized by Apple yet, so macOS blocks the first launch. Either:
 
 After that it lives in your menu bar. Turn on **Launch at login** in Settings (⌘,).
 
-Some folders (Documents, Downloads, iPhone backups) are protected by macOS: you'll be asked for access, or you can grant Full Disk Access in System Settings › Privacy & Security to measure everything.
+Give Dustpan **Full Disk Access** once (the Overview has a button that opens the right screen). Without it macOS asks separately for Documents, Desktop, Downloads and more, and some folders can't be measured at all.
 
 ### Build from source
 

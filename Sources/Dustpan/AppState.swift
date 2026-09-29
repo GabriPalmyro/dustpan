@@ -50,6 +50,7 @@ final class AppState {
 
     var selection: SidebarItem? = .overview
     var disk: DiskStatus? = DiskStatus.current()
+    var hasFullDiskAccess = Permissions.hasFullDiskAccess
 
     var junk: [CleanupItem] = []
     var installers: [InstallerFile] = []
@@ -68,6 +69,7 @@ final class AppState {
 
     /// Captured from a SwiftUI view so non-view code (notifications, menu) can open the main window.
     var openMainWindow: (() -> Void)?
+    var openOnboarding: (() -> Void)?
 
     private var monitor: Task<Void, Never>?
 
@@ -81,7 +83,7 @@ final class AppState {
     func startMonitoring() {
         guard monitor == nil else { return }
         Notifier.shared.onOpen = { [weak self] in self?.openMainWindow?() }
-        Notifier.shared.requestAuthorization()
+        Notifier.shared.activate()
         monitor = Task { [weak self] in
             while !Task.isCancelled {
                 await self?.tick()

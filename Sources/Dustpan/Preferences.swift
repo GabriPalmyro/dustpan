@@ -11,6 +11,7 @@ enum Pref {
     static let staleProjectDays = "staleProjectDays"
     static let rules = "autoCleanRules"
     static let lastLowSpaceAlert = "lastLowSpaceAlert"
+    static let onboardingDone = "onboardingDone"
 }
 
 enum Preferences {
@@ -32,6 +33,7 @@ enum Preferences {
     static var notificationsEnabled: Bool { store.bool(forKey: Pref.notificationsEnabled) }
     static var largeFileThreshold: Int64 { .megabytes(store.integer(forKey: Pref.largeFileMB)) }
     static var staleProjectDays: Int { store.integer(forKey: Pref.staleProjectDays) }
+    static var onboardingDone: Bool { store.bool(forKey: Pref.onboardingDone) }
 
     static var lastLowSpaceAlert: Date? {
         get { store.object(forKey: Pref.lastLowSpaceAlert) as? Date }

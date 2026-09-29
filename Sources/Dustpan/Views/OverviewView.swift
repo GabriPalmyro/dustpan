@@ -7,6 +7,8 @@ struct OverviewView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
+                if !state.hasFullDiskAccess { FullDiskAccessBanner() }
+
                 if let disk = state.disk {
                     DiskSummary(disk: disk, health: state.health)
                 }
@@ -75,5 +77,36 @@ private struct RecommendationRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// Without Full Disk Access macOS asks separately for Documents, Desktop, Downloads… One grant covers them all.
+private struct FullDiskAccessBanner: View {
+    @Environment(AppState.self) private var state
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "lock.shield").font(.title2).foregroundStyle(.orange)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Give Dustpan Full Disk Access").font(.headline)
+                Text("Otherwise macOS asks separately for Documents, Desktop, Downloads and more, and some folders (like iPhone backups) can't be measured. Turn Dustpan on in the list that opens.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack {
+                    Button("Open Settings") { NSWorkspace.shared.open(Permissions.fullDiskAccessSettings) }
+                        .buttonStyle(.borderedProminent)
+                    Button("Show Dustpan in Finder") { Finder.reveal(Bundle.main.bundleURL) }
+                }
+                .padding(.top, 2)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+        // Re-check when the user comes back from System Settings.
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            state.hasFullDiskAccess = Permissions.hasFullDiskAccess
+        }
     }
 }

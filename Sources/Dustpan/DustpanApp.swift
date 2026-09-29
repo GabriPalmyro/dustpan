@@ -88,4 +88,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         MainActor.assumeIsolated { AppState.shared.openMainWindow?() }
         return true
     }
+
+    /// Granting Full Disk Access makes System Settings ask to "Quit & Reopen", but the reopen is unreliable
+    /// for menu bar apps. When the quit request comes from System Settings, relaunch ourselves.
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        if let event = NSAppleEventManager.shared().currentAppleEvent,
+           let senderPID = event.attributeDescriptor(forKeyword: keySenderPIDAttr)?.int32Value,
+           NSRunningApplication(processIdentifier: senderPID)?.bundleIdentifier == "com.apple.systempreferences" {
+            relaunch()
+        }
+        return .terminateNow
+    }
+
+    private func relaunch() {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+        // Outlives us: waits for this instance to exit, then opens the bundle again.
+        process.arguments = ["-c", "sleep 1; /usr/bin/open \"$1\"", "sh", Bundle.main.bundlePath]
+        try? process.run()
+    }
 }

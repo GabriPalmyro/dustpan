@@ -49,10 +49,12 @@ private struct Meter: View {
             }
             .font(history == nil ? .callout : .body)
             if let history {
+                // Newest sample pinned to the right edge, like Activity Monitor.
+                let start = SystemMonitor.historyLength - history.count
                 Chart(Array(history.enumerated()), id: \.offset) { i, v in
-                    AreaMark(x: .value("t", i), y: .value(title, v))
+                    AreaMark(x: .value("t", start + i), y: .value(title, v))
                         .foregroundStyle(tint.opacity(0.25))
-                    LineMark(x: .value("t", i), y: .value(title, v))
+                    LineMark(x: .value("t", start + i), y: .value(title, v))
                         .foregroundStyle(tint)
                 }
                 .chartYScale(domain: 0...1)

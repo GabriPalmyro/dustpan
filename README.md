@@ -13,6 +13,27 @@ Built for developer Macs, where the space usually goes to Xcode, simulators, Gra
 - **Nothing automatic until you turn it on**
 - Open source, MIT
 
+<p align="center"><img src="docs/screenshots/overview.png" width="760" alt="Overview: free space and the biggest safe wins"></p>
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/activity.png" alt="Activity: live CPU, GPU and memory, dev tools holding RAM, top apps"></td>
+    <td><img src="docs/screenshots/junk.png" alt="Junk: every item explains what it is and what happens if you delete it"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Activity</b> — CPU, GPU, memory pressure and swap, what's using them</td>
+    <td align="center"><b>Junk</b> — every item says what it is and what deleting it costs</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/auto-clean.png" alt="Auto Clean: opt-in rules per item"></td>
+    <td><img src="docs/screenshots/onboarding.png" alt="Onboarding: the permissions Dustpan needs"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Auto Clean</b> — opt-in rules: daily, weekly or when space is low</td>
+    <td align="center"><b>Onboarding</b> — one checklist for the permissions it needs</td>
+  </tr>
+</table>
+
 ## What it does
 
 | | |

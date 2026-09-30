@@ -19,11 +19,11 @@ struct MainView: View {
         .frame(minWidth: 760, minHeight: 480)
         .overlay(alignment: .bottom) { toast }
         .onAppear {
-            // Show in the Dock and ⌘-Tab while the window is open; menu-bar-only otherwise.
+            // Show in the Dock and ⌘-Tab while the window is open. AppDelegate drops back to
+            // menu-bar-only when the last window closes.
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
         }
-        .onDisappear { NSApp.setActivationPolicy(.accessory) }
         .task {
             // No scanning (and no folder-permission dialogs) until onboarding is done.
             guard Preferences.onboardingDone else { state.openOnboarding?(); return }

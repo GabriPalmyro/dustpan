@@ -50,7 +50,7 @@ struct MenuBarView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.vertical, 4)
-                MenuButton("Quit", symbol: "power") { NSApp.terminate(nil) }
+                MenuButton("Quit Dustpan", symbol: "power") { AppDelegate.quit() }
             }
         }
         .padding(14)

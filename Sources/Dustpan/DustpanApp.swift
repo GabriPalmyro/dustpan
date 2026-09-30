@@ -83,6 +83,27 @@ private struct MenuBarLabel: View {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// Set by the menu bar's "Quit Dustpan" — the one in-app way to really quit.
+    private static var quitRequested = false
+
+    static func quit() {
+        quitRequested = true
+        NSApp.terminate(nil)
+    }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Closing the last window (red X, ⌘W) leaves Dustpan running in the menu bar, out of the Dock.
+        NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { note in
+            let closing = note.object as? NSWindow
+            DispatchQueue.main.async {
+                let open = NSApp.windows.contains { $0 !== closing && $0.isVisible && $0.styleMask.contains(.titled) }
+                if !open { NSApp.setActivationPolicy(.accessory) }
+            }
+        }
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
+
     /// Launching the app again from Finder / Spotlight while it's running opens the window.
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
         MainActor.assumeIsolated { AppState.shared.openMainWindow?() }
@@ -91,9 +112,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Granting Full Disk Access makes System Settings ask to "Quit & Reopen", but the reopen is unreliable
     /// for menu bar apps. When the quit request comes from System Settings, relaunch ourselves.
+    ///
+    /// ⌘Q from the app menu doesn't quit either: it closes the windows and keeps monitoring in the background.
+    /// Real quits come from the menu bar's "Quit Dustpan", the Dock, or logout/shutdown (those arrive as Apple Events).
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        if let event = NSAppleEventManager.shared().currentAppleEvent,
-           let senderPID = event.attributeDescriptor(forKeyword: keySenderPIDAttr)?.int32Value,
+        if Self.quitRequested { return .terminateNow }
+        guard let event = NSAppleEventManager.shared().currentAppleEvent else {
+            NSApp.windows.filter { $0.isVisible && $0.styleMask.contains(.titled) }.forEach { $0.close() }
+            NSApp.setActivationPolicy(.accessory)
+            return .terminateCancel
+        }
+        if let senderPID = event.attributeDescriptor(forKeyword: keySenderPIDAttr)?.int32Value,
            NSRunningApplication(processIdentifier: senderPID)?.bundleIdentifier == "com.apple.systempreferences" {
             relaunch()
         }

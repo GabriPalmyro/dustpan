@@ -94,12 +94,6 @@ struct OnboardingView: View {
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
         }
-        .onDisappear {
-            // Back to menu-bar-only unless the main window is taking over.
-            if !NSApp.windows.contains(where: { $0.isVisible && $0.identifier?.rawValue.hasPrefix("main") == true }) {
-                NSApp.setActivationPolicy(.accessory)
-            }
-        }
         // Permissions change in System Settings; poll cheaply while this window is open.
         .task {
             while !Task.isCancelled {

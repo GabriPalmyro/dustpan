@@ -75,7 +75,7 @@ Dustpan isn't notarized by Apple yet, so macOS blocks the first launch. Either:
   xattr -dr com.apple.quarantine /Applications/Dustpan.app
   ```
 
-After that it lives in your menu bar. Turn on **Launch at login** in Settings (⌘,).
+After that it lives in your menu bar. Closing the window (or ⌘Q) keeps it running there; to really quit, use **Quit Dustpan** in the menu bar popover. Turn on **Launch at login** in Settings (⌘,).
 
 Give Dustpan **Full Disk Access** once (the Overview has a button that opens the right screen). Without it macOS asks separately for Documents, Desktop, Downloads and more, and some folders can't be measured at all.
 
